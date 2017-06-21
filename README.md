@@ -22,3 +22,13 @@ So it's back to COMSOL. And what will I export? I'd prefer to have a grid
 of lines parallel to the axis, which entails a 3D array. It's not enough
 to just start along the axis, because this might have an unusual
 magnitude of rotation due to the symmetry.
+
+I exported a grid close to -5.461mm (plus and minus a millimeter)
+since this is where the transitions should happen looking by
+COMSOL. That's in z anyway. In x and y it looks like everything is
+relevant, especially at large x and y, (which might explain why the
+ring is always destabilized?) So I did a 20x20 50 micron grid up to a
+milimeter each way.
+
+I found the files for running the TISE and added them to the
+git. Almost ready to run it!
