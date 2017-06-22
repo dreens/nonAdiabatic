@@ -60,3 +60,15 @@ Ey(nn) = 0;
 Ez(nn) = 0;
 
 %% Now we can generate rows of Hamiltonians from these.
+checkHops(zz(19,1,:),Ex(19,1,:),Ey(19,1,:),Ez(19,1,:),500000)
+
+%% Here we are:
+figure;
+hold on
+for i=1:21
+    for j=1:21
+        plot(squeeze(En(i,j,:)))
+    end
+end
+
+
