@@ -59,16 +59,69 @@ Ex(nn) = 0;
 Ey(nn) = 0;
 Ez(nn) = 0;
 
-%% Now we can generate rows of Hamiltonians from these.
-checkHops(zz(19,1,:),Ex(19,1,:),Ey(19,1,:),Ez(19,1,:),500000)
-
-%% Here we are:
+%% Plot minimum electric field along trajectories
+% Show the min e-field along trajectories:
+En = sqrt(Ex.^2+Ey.^2+Ez.^2);
+Emin = min(En,[],3);
 figure;
+pcolor(xx(:,:,1),yy(:,:,1),Emin/1e5)
+title('Minimum Energy Gap along trajectories')
+xlabel('Distance towards Pin (mm)')
+ylabel('Distance along Pin (mm)')
+h = colorbar;
+ylabel(h,'Electric Field (kV/cm)')
+%% We need an electric field to gap converter:
+e = [0:1e4:9e4 logspace(5,9,50)];
+h = e;
+for i=1:length(e)
+    hh = OH_Ham_Lab_Fixed(0,0,0,e(i),0,0);
+    d = diff(sort(eig(hh)));
+    h(i) = d(end-1);
+end
+sp = spapi(3,e,h);
+gap = @(efield) fnval(sp,efield);
+%% Plot minimum gap along trajectories
+% Like before but using gap converter
+figure;
+pcolor(xx(:,:,1),yy(:,:,1),gap(Emin)/(6.626e-28))
+title('Minimum Energy Gap along trajectories')
+xlabel('Distance towards Pin (mm)')
+ylabel('Distance along Pin (mm)')
+h = colorbar;
+ylabel(h,'Gap (MHz)')
+
+
+%% Plot it to confirm behavior
+figure;
+plot(e*1e-5,h/(6.626e-28),'r*')
+dense = logspace(4,9,1000);
+hold on
+grid on
+plot(dense*1e-5,gap(dense)/(6.626e-28),'b-')
+title('Field to Gap Converter')
+set(gca,'XScale','log')
+xlabel('E-field (kV/cm)')
+ylabel('Energy (MHz)')
+set(gca,'YScale','log')
+%% Plot Energy along trajectories, conglomerated.
+figure;
+grid on
+title('Energy Gap Along Trajectories')
+xlabel('Distance from Minimum Energy (mm)')
+ylabel('Energy Gap f3/2 to f1/2 (MHz)')
 hold on
 for i=1:21
     for j=1:21
-        plot(squeeze(En(i,j,:)))
+        plot(squeeze(zz(1,1,:)+5.461),gap(squeeze(En(i,j,:))))
     end
 end
+
+%% Now we can generate rows of Hamiltonians from these.
+% This is taking too long. Thoughts?
+% convert to a 4x4? -nothing obvious about how to do it. Need lin alg book
+% I think.
+% is the cacheing a problem?? Let's knock it out and see. No, it is working
+% just fine.
+checkHops(zz(20,1,:),Ex(20,1,:),Ey(20,1,:),Ez(20,1,:),750000)
 
 

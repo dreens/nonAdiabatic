@@ -37,7 +37,7 @@ Ex = griddedInterpolant(z,Exp,'cubic');
 Ey = griddedInterpolant(z,Eyp,'cubic');
 Ez = griddedInterpolant(z,Ezp,'cubic');
 
-H = @(t) OH_Ham_Lab_Fixed(0,0,0,Ex(v*t+min(z)),Ey(v*t+min(z)),Ez(v*t+min(z)));
+H = @(t) OH_Ham_Lab_Fixed(1e-4,0,0,Ex(v*t+min(z)),Ey(v*t+min(z)),Ez(v*t+min(z)));
 
 % Set inputs to the ODE solver
 t0 = 0:1e-9:((max(z)-min(z))/v);
@@ -50,11 +50,11 @@ y0 = y0 * 1i;           % Add phase to make sure it doesn't change solution
 compmag = @(t,y,flag,varargin) odeplot(t,y.*conj(y),flag,varargin);
 
 % The tolerance settings have been tuned for convergence. 1e-6, 1e-8 work.
-odeop = odeset('RelTol',1e-5,'AbsTol',1e-5,'OutputFcn',compmag);
+odeop = odeset('RelTol',1e-7,'AbsTol',1e-9,'OutputFcn',compmag);
 
 % ode45 takes a function that gives y'. For schrodinger eqn, y' = H*y/(i*hb)
 figure(1)
-[ts, ys] = ode15s(@(t,y) H(t)*y/hb/1i, t0, y0,odeop);
+[ts, ys] = ode45(@(t,y) H(t)*y/hb/1i, t0, y0, odeop);
 
 % overwrite plot output during ode solving to remove annoying markers.
 plot(ts,ys.*conj(ys),'LineWidth',2)
@@ -65,7 +65,7 @@ zs = zeros(size(ys));
 es = zs;
 for i=1:length(ts)
     [V,D] = eig(H(ts(i)));
-    zs(i,:) = ys(i,:)*V;
+    zs(i,:) = conj(ys(i,:))*V;
     es(i,:) = diag(D);
 end
 close(figure(2))

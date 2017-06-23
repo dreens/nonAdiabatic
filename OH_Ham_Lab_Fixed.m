@@ -16,25 +16,25 @@
 % for OH_Ham_Simple_SI(B,E,theta).
 
 function H = OH_Ham_Lab_Fixed(Bx,By,Bz,Ex,Ey,Ez)
-% 
-% persistent cacheH;
-% 
-% if isempty(cacheH)
-%     cacheH.full = 0;
-%     cacheH.H0 = OH_Ham_Lab_Fixed(0,0,0,0,0,0);
-%     cacheH.Bx = OH_Ham_Lab_Fixed(1,0,0,0,0,0) - cacheH.H0;
-%     cacheH.By = OH_Ham_Lab_Fixed(0,1,0,0,0,0) - cacheH.H0;
-%     cacheH.Bz = OH_Ham_Lab_Fixed(0,0,1,0,0,0) - cacheH.H0;
-%     cacheH.Ex = OH_Ham_Lab_Fixed(0,0,0,1,0,0) - cacheH.H0;
-%     cacheH.Ey = OH_Ham_Lab_Fixed(0,0,0,0,1,0) - cacheH.H0;
-%     cacheH.Ez = OH_Ham_Lab_Fixed(0,0,0,0,0,1) - cacheH.H0;
-%     cacheH.full = 1;
-%     H = OH_Ham_Lab_Fixed(Bx,By,Bz,Ex,Ey,Ez);
-% elseif cacheH.full
-%     H = cacheH.H0 + ...
-%         cacheH.Bx*Bx + cacheH.By*By + cacheH.Bz*Bz + ...
-%          cacheH.Ex*Ex + cacheH.Ey*Ey + cacheH.Ez*Ez;
-% else
+
+persistent cacheH;
+
+if isempty(cacheH)
+    cacheH.full = 0;
+    cacheH.H0 = OH_Ham_Lab_Fixed(0,0,0,0,0,0);
+    cacheH.Bx = OH_Ham_Lab_Fixed(1,0,0,0,0,0) - cacheH.H0;
+    cacheH.By = OH_Ham_Lab_Fixed(0,1,0,0,0,0) - cacheH.H0;
+    cacheH.Bz = OH_Ham_Lab_Fixed(0,0,1,0,0,0) - cacheH.H0;
+    cacheH.Ex = OH_Ham_Lab_Fixed(0,0,0,1,0,0) - cacheH.H0;
+    cacheH.Ey = OH_Ham_Lab_Fixed(0,0,0,0,1,0) - cacheH.H0;
+    cacheH.Ez = OH_Ham_Lab_Fixed(0,0,0,0,0,1) - cacheH.H0;
+    cacheH.full = 1;
+    H = OH_Ham_Lab_Fixed(Bx,By,Bz,Ex,Ey,Ez);
+elseif cacheH.full
+    H = cacheH.H0 + ...
+        cacheH.Bx*Bx + cacheH.By*By + cacheH.Bz*Bz + ...
+         cacheH.Ex*Ex + cacheH.Ey*Ey + cacheH.Ez*Ez;
+else
 
     uB=9.27401*1e-24; 
     g = 0.9355; %1.4032 is 3/2 * the gJ factor for OH, 0.9355
@@ -72,7 +72,7 @@ function H = OH_Ham_Lab_Fixed(Bx,By,Bz,Ex,Ey,Ez)
 
     H = H0 + Hb + He;
 
-%end
+end
 
     function C = coupling(j,m,o,e,q,jj,mm,oo,ee,be)
         term1 = (1+be*e*ee*(-1)^(j+jj+2*abs(o)))/2;
