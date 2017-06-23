@@ -122,6 +122,8 @@ end
 % I think.
 % is the cacheing a problem?? Let's knock it out and see. No, it is working
 % just fine.
-checkHops(zz(20,1,:),Ex(20,1,:),Ey(20,1,:),Ez(20,1,:),750000)
+xc = 20;
+yc = 1;
+out = checkHops(zz(xc,yc,:),Ex(xc,yc,:),Ey(xc,yc,:),Ez(xc,yc,:),750000);
 
 
