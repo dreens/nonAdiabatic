@@ -60,9 +60,9 @@ Ez(nn) = 0;
 %% Now we Loop through and check hopping probability
 hopgrid = zeros(np);
 zzz = zz(1,1,:);
-for k=1:np*np
+parfor k=1:np*np
     i = mod(k-1,np) + 1;
-    j = floor(k/np)+1;
+    j = floor((k-1)/np)+1;
     hopgrid(k) = checkHops(zzz,Ex(i,j,:),Ey(i,j,:),Ez(i,j,:),750000);
 end
 
