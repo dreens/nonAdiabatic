@@ -20,7 +20,7 @@
 % Modified again for purposes of studying nonadiabatic transitions in the
 % decelerator.
 
-function [full,hop] = checkHops(z,Exp,Eyp,Ezp,v)
+function hop = checkHops(z,Exp,Eyp,Ezp,v)
 
 z   = squeeze(z);
 Exp = squeeze(Exp);
@@ -37,12 +37,13 @@ Ex = griddedInterpolant(z,Exp,'cubic');
 Ey = griddedInterpolant(z,Eyp,'cubic');
 Ez = griddedInterpolant(z,Ezp,'cubic');
 
-H = @(t) OH_Ham_Lab_Fixed(1e-4,0,0,Ex(v*t+min(z)),Ey(v*t+min(z)),Ez(v*t+min(z)));
+H = @(t) OH_Ham_Lab_Fixed(1e-10,0,0,Ex(v*t+min(z)),Ey(v*t+min(z)),Ez(v*t+min(z)));
 
 % Set inputs to the ODE solver
 t0 = 0:1e-9:((max(z)-min(z))/v);
 [V,D] = eig(H(t0(1)));  % get initial eigenstates to initialize molecule
-y0 = V(:,end);          % initialize molecule's state vector to highest energy eigenstate
+[~,l] = sort(diag(real(D)));
+y0 = V(:,l(end));          % initialize molecule's state vector to highest energy eigenstate
 y0 = y0 * 1i;           % Add phase to make sure it doesn't change solution
 
 % This function modifies ode45's builtin plotting function to handle
@@ -50,7 +51,7 @@ y0 = y0 * 1i;           % Add phase to make sure it doesn't change solution
 compmag = @(t,y,flag,varargin) odeplot(t,y.*conj(y),flag,varargin);
 
 % The tolerance settings have been tuned for convergence. 1e-6, 1e-8 work.
-odeop = odeset('RelTol',1e-8,'AbsTol',1e-10,'OutputFcn',compmag);
+odeop = odeset('RelTol',1e-7,'AbsTol',1e-9,'OutputFcn',compmag);
 
 % ode45 takes a function that gives y'. For schrodinger eqn, y' = H*y/(i*hb)
 figure(1)
@@ -65,17 +66,10 @@ zs = zeros(size(ys));
 es = zs;
 for i=1:length(ts)
     [V,D] = eig(H(ts(i)));
-    if diag(D)==sort(diag(D))
-        zs(i,:) = conj(ys(i,:))*V;
-        es(i,:) = diag(D);
-    else
-        disp('uh-oh')
-        % Next time, I need to figure out how to get the z's arranged how I
-        % want them. Probably sort the eigenvalues, construct a permutation
-        % matrix based on the sort locations, and rearrange the z's
-        % accordingly. Or skip the permutation matrix and just rearrange
-        % the z's.
-    end
+    [Ds, l] = sort(real(diag(D)));
+    temp = conj(ys(i,:))*V;
+    zs(i,:) = temp(l);
+    es(i,:) = real(Ds);
 end
 close(figure(2))
 figure(2);
@@ -90,7 +84,7 @@ ylim([0 1])
 
 full = ys;
 final = zs.*conj(zs);
-hop = sum(final(3:end));
+hop = sum(final(end,1:end-2));
 
 %% Caught a significant bug.
 % The Hamiltonian was changing basis at the LZ crossing, due to the angle
