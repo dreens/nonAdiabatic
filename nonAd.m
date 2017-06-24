@@ -62,12 +62,16 @@ Ez(nn) = 0;
 %% Plot minimum electric field along trajectories
 % Show the min e-field along trajectories:
 En = sqrt(Ex.^2+Ey.^2+Ez.^2);
-Emin = min(En,[],3);
+Emin = min(En,[],3)/1e5;
 figure;
-pcolor(xx(:,:,1),yy(:,:,1),Emin/1e5)
+%pcolor(xx(:,:,1),yy(:,:,1),Emin)
+[xxx, yyy] = meshgrid(-1000:50:1000,-1000:50:1000);
+tallr = [flipud(Emin) ; Emin(2:end,:)];
+wider = [fliplr(tallr) tallr(:,2:end)];
+contourf(xxx,yyy,wider)
 title('Minimum Energy Gap along trajectories')
-xlabel('Distance towards Pin (mm)')
-ylabel('Distance along Pin (mm)')
+xlabel('Distance towards Pin (\mum)')
+ylabel('Distance along Pin (\mum)')
 h = colorbar;
 ylabel(h,'Electric Field (kV/cm)')
 %% We need an electric field to gap converter:
@@ -83,10 +87,11 @@ gap = @(efield) fnval(sp,efield);
 %% Plot minimum gap along trajectories
 % Like before but using gap converter
 figure;
-pcolor(xx(:,:,1),yy(:,:,1),gap(Emin)/(6.626e-28))
+%pcolor(xx(:,:,1),yy(:,:,1),gap(Emin)/(6.626e-28))
+contourf(xxx,yyy,gap(wider*1e5)/(6.626e-28))
 title('Minimum Energy Gap along trajectories')
-xlabel('Distance towards Pin (mm)')
-ylabel('Distance along Pin (mm)')
+xlabel('Distance towards Pin (\mum)')
+ylabel('Distance along Pin (\mum)')
 h = colorbar;
 ylabel(h,'Gap (MHz)')
 
@@ -112,9 +117,10 @@ ylabel('Energy Gap f3/2 to f1/2 (MHz)')
 hold on
 for i=1:21
     for j=1:21
-        plot(squeeze(zz(1,1,:)+5.461),gap(squeeze(En(i,j,:))))
+        plot(squeeze(zz(1,1,:)+5.461),gap(squeeze(En(i,j,:)))/6.626e-28)
     end
 end
+xlim([-1.2 1.2])
 
 %% Now we can generate rows of Hamiltonians from these.
 % This is taking too long. Thoughts?
@@ -122,8 +128,21 @@ end
 % I think.
 % is the cacheing a problem?? Let's knock it out and see. No, it is working
 % just fine.
-xc = 20;
+xc = 21;
 yc = 1;
 out = checkHops(zz(xc,yc,:),Ex(xc,yc,:),Ey(xc,yc,:),Ez(xc,yc,:),750000);
 
-
+%% Back from Cluster
+% 
+[xxx, yyy] = meshgrid(-1000:50:1000,-1000:50:1000);
+r = load('rc21x21.mat');
+r = r.r;
+tallr = [flipud(r) ; r(2:end,:)];
+wider = [fliplr(tallr) tallr(:,2:end)];
+figure;
+contourf(xxx,yyy,log10(wider))
+cb = colorbar;
+ylabel(cb,'Log Hop Probability')
+ylabel('Distance between pins')
+xlabel('Distance along pins')
+title('Hopping Probability')
