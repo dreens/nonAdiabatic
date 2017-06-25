@@ -75,14 +75,14 @@ ylabel('Distance along Pin (\mum)')
 h = colorbar;
 ylabel(h,'Electric Field (kV/cm)')
 %% We need an electric field to gap converter:
-e = [0:1e4:9e4 logspace(5,9,50)];
-h = e;
+e = [0 logspace(4,9,60)];
+hhh = e;
 for i=1:length(e)
     hh = OH_Ham_Lab_Fixed(0,0,0,e(i),0,0);
     d = diff(sort(eig(hh)));
-    h(i) = d(end-1);
+    hhh(i) = d(end-1);
 end
-sp = spapi(3,e,h);
+sp = spapi(3,e,hhh);
 gap = @(efield) fnval(sp,efield);
 %% Plot minimum gap along trajectories
 % Like before but using gap converter
@@ -96,9 +96,9 @@ h = colorbar;
 ylabel(h,'Gap (MHz)')
 
 
-%% Plot it to confirm behavior
-figure;
-plot(e*1e-5,h/(6.626e-28),'r*')
+%% Plot converter to confirm behavior
+figure(333);
+plot(e*1e-5,hhh/(6.626e-28),'r*')
 dense = logspace(4,9,1000);
 hold on
 grid on
@@ -130,7 +130,7 @@ xlim([-1.2 1.2])
 % just fine.
 xc = 21;
 yc = 1;
-out = checkHops(zz(xc,yc,:),Ex(xc,yc,:),Ey(xc,yc,:),Ez(xc,yc,:),750000);
+%out = checkHops(zz(xc,yc,:),Ex(xc,yc,:),Ey(xc,yc,:),Ez(xc,yc,:),750000);
 
 %% Back from Cluster
 % 
@@ -146,3 +146,27 @@ ylabel(cb,'Log Hop Probability')
 ylabel('Distance between pins')
 xlabel('Distance along pins')
 title('Hopping Probability')
+
+%% How about Hyperfine?
+% Lets see how the gaps are effected
+e = [0 logspace(4,9,60)];
+hhh = e;
+for i=1:length(e)
+    hh = OH_hamiltonian_HF(0,e(i),0);
+    d = diff(sort(eig(hh)));
+    hhh(i) = d(end-3);
+end
+ssp = spapi(3,e,hhh);
+gap = @(efield) fnval(ssp,efield);
+
+figure(333); hold on
+plot(e*1e-5,hhh/(6.626e-28),'c*')
+dense = logspace(4,9,1000);
+hold on
+grid on
+plot(dense*1e-5,gap(dense)/(6.626e-28),'g-')
+title('Field to Gap Converter')
+set(gca,'XScale','log')
+xlabel('E-field (kV/cm)')
+ylabel('Energy (MHz)')
+set(gca,'YScale','log')
