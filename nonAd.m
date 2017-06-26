@@ -148,7 +148,9 @@ xlabel('Distance along pins')
 title('Hopping Probability')
 
 %% How about Hyperfine?
-% Lets see how the gaps are effected
+% Lets see how the gaps are effected.
+% Conclusion: it's relevant below 500 V/cm or so, by a factor of something
+% like 4, but for only half the population.
 e = [0 logspace(4,9,60)];
 hhh = e;
 for i=1:length(e)
