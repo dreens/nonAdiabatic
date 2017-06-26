@@ -158,7 +158,7 @@ Enq = sqrt(Exq.^2+Eyq.^2+Ezq.^2);
 
 %% Now we Loop through everything
 hopgrid = zeros([np np npz]);
-for k=1:np*np*npz
+parfor k=1:np*np*npz
     hopgrid(k) = checkHopSwitches(Exp(k),Eyp(k),Ezp(k),Exq(k),Eyq(k),Ezq(k),100e-9);
 end
 
