@@ -43,7 +43,7 @@ y0 = y0 * 1i;           % Add phase to make sure it doesn't change solution
 compmag = @(t,y,flag,varargin) odeplot(t,y.*conj(y),flag,varargin);
 
 % The tolerance settings have been tuned for convergence. 1e-6, 1e-8 work.
-odeop = odeset('RelTol',1e-6,'AbsTol',1e-8,'OutputFcn',compmag);
+odeop = odeset('RelTol',1e-8,'AbsTol',1e-10,'OutputFcn',compmag);
 
 % ode45 takes a function that gives y'. For schrodinger eqn, y' = H*y/(i*hb)
 figure(1)
@@ -74,7 +74,7 @@ legend('Location','NorthEastOutside',...
 grid on
 ylim([0 1])
 
-full = ys;
+%full = ys;
 final = zs.*conj(zs);
 hop = sum(final(end,1:end-2));
 
