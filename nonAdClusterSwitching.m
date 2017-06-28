@@ -163,3 +163,51 @@ parfor k=1:np*np*npz
 end
 
 end
+
+%% Back from Cluster Switches
+[xxx yyy] = meshgrid(-1:0.1:1,-1:0.1:1);
+absmax = max(Enp(:));
+for i=1:2*npz-1
+    figure;
+    if i>npz
+        j = 2*npz - i;
+    else
+        j = i;
+    end
+    mm = minus(:,:,j);
+    pp = plus(:,:,j);
+    full = [mm(end:-1:2,end:-1:2) pp(end:-1:2,:) ; ...
+            pp(:,end:-1:2) mm];
+    contourf(xxx,yyy,log10(full),'LineStyle','none')
+    hold on
+    exp = Exp(:,:,j);
+    eyp = Eyp(:,:,j);
+    exq = Exq(:,:,j);
+    eyq = Eyq(:,:,j);
+    fex = [exp(end:-1:2,end:-1:2), -exp(end:-1:2,:) ; ...
+            -exp(:,end:-1:2), exp];
+    fey = [eyp(end:-1:2,end:-1:2), eyp(end:-1:2,:) ; ...
+            eyp(:,end:-1:2), eyp];
+
+    fex2 = [exq(end:-1:2,end:-1:2), exq(end:-1:2,:) ; ...
+            exq(:,end:-1:2), exq];
+    fey2 = [eyq(end:-1:2,end:-1:2), -eyq(end:-1:2,:) ; ...
+            -eyq(:,end:-1:2), eyq];
+    hold on
+    s = @(mat) mat(2:2:end,2:2:end);
+    scale = 2/3 - log10(absmax/max(max(sqrt(fex.^2+fey.^2))))/4;
+    q1 = quiver(s(xxx),s(yyy),s(-fex),s(-fey),scale);
+    q1.Color = [0 .85 .2];
+    q1.LineWidth = 3;
+    scale = 2/3 - log10(absmax/max(max(sqrt(fex2.^2+fey2.^2))))/4;
+    quiver(s(xxx),s(yyy),s(fex2),s(fey2),scale,'r','LineWidth',3)
+    caxis([-5 -1]) 
+    cmap = colormap(gray);
+    colormap(flipud(cmap(20:end,:)))
+    xlabel('X-axis (mm)','FontSize',13)
+    ylabel('Y-axis (mm)','FontSize',13)
+    phi = (i-1)*180/(npz-1)-90;
+    title(sprintf('Switching Spin-Flips, \\phi=%3d^\\circ',phi),'FontSize',14)
+    h = colorbar;
+    ylabel(h,'log10 Hopping Probability','FontSize',13)
+end

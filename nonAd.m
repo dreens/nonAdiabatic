@@ -172,3 +172,5 @@ set(gca,'XScale','log')
 xlabel('E-field (kV/cm)')
 ylabel('Energy (MHz)')
 set(gca,'YScale','log')
+
+
