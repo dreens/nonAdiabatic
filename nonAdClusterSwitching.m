@@ -165,6 +165,10 @@ end
 end
 
 %% Back from Cluster Switches
+%
+% Visualizing 3D grid of switch data as a fly through along z, indexed by
+% phase angle.
+%
 [xxx yyy] = meshgrid(-1:0.1:1,-1:0.1:1);
 absmax = max(Enp(:));
 for i=1:2*npz-1
