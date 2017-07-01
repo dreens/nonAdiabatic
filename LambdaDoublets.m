@@ -8,9 +8,11 @@ q = -1159.99165;
 % For OD:
 A = -4165275.23
 B = 296312.0
-g = 
+g = -10000; % I don't know what this one is. But it doesn't change the lambda doublet TOO much.
 p = 3765.112;
 q = -329.38;
+
+% Conclusion: Lambda Doublet for OD ~ 300 MHz.
 
 m11 = A/2 + 2*B;
 m22 = -A/2 + 4*B - g + p + 2*q;
